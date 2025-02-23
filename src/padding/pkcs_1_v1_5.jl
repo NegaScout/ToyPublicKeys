@@ -1,6 +1,6 @@
 const padding_pkcs_1_v1_5_num_c_chars = 3
 const padding_pkcs_1_v1_5_pad_start = 3
-
+struct pkcs1_v1_5 end
 """
     is_padded(msg::AbstractVector{T}) where {T<:Base.BitInteger}
 
