@@ -30,6 +30,17 @@ end
     @test pow_crt == pow_m
 end
 
+@testset "validate generate_rsa_key_pair" begin
+    Random.seed!(42)
+    private_key, public_key = ToyPublicKeys.generate_rsa_key_pair(ToyPublicKeys.pkcs1_v1_5, 2048)
+    @test try
+        ToyPublicKeys.validate(private_key)
+        true
+    catch
+        false
+    end
+end
+
 @testset "RSAStep(RSAStep) is identity ~ BigInt" begin
     Random.seed!(42)
     private_key, public_key = ToyPublicKeys.generate_rsa_key_pair(ToyPublicKeys.pkcs1_v1_5, 2048)

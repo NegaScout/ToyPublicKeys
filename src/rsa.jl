@@ -42,6 +42,17 @@ Union of RSAPrivateKey and RSAPublicKey for methods, that do not require specifi
 """
 const RSAKey = Union{RSAPrivateKey,RSAPublicKey}
 
+function validate(key::RSAPrivateKey)
+    (length(key.primes) >= 2) || error("length(key.primes) < 2") |> throw
+    all((key.public_exponent > 0, key.exponent > 0)) && all(key.primes .> 0) || error("all((key.public_exponent, key.exponent) .> 0, key.primes .> 0)") |> throw
+    (length(key.exponent) > 0) || error("length(key.primes) < 2") |> throw
+    (prod(key.primes) == key.modulus) || error("(prod(key.primes) != key.modulus)") |> throw
+    ((key.exponent * key.public_exponent) % lcm((key.primes .- 1)...)) == 1 || error("(key.exponent * key.public_exponent) % lcm((key.exponent - 1), (key.public_exponent - 1)) != 1") |> throw
+    (key.public_exponent * key.crt_exponents[1]) % (key.primes[1] - 1) == 1 || error(" (key.public_exponent * key.crt_exponents[1]) % (key.primes[1] - 1) != 1") |> throw
+    (key.public_exponent * key.crt_exponents[2]) % (key.primes[2] - 1) == 1 || error("(key.public_exponent * key.crt_exponents[2]) % (key.primes[2] - 1) != 1") |> throw
+    (key.primes[2] * key.crt_coefficients[2]) % key.primes[1] == 1 || error("(key.primes[2] * key.crt_coefficients[2]) % key.primes[1] != 1") |> throw
+end
+
 """
     RSAStep(::pkcs1_v1_5_t, msg::BigInt, key::RSAPrivateKey)
 
